@@ -18,9 +18,6 @@ extraResources:
 mac:
   target:
     - target: zip
-      arch:
-        - x64
-        - arm64
   category: public.app-category.utilities
   artifactName: portable/${productName}-Portable-mac-${version}-${arch}.${ext}
 linux:

@@ -61,11 +61,7 @@
     "mac": {
       "target": [
         {
-          "target": "zip",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
+          "target": "zip"
         }
       ],
       "category": "public.app-category.utilities",

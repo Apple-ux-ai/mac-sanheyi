@@ -35,7 +35,8 @@ if [ ! -f "backend/bin/ffmpeg" ]; then
   echo "提示: backend/bin/ 下未找到 ffmpeg。视频相关功能需在 macOS 版目录中放置 ffmpeg/ffprobe 可执行文件。"
 fi
 
-echo "打包 Electron（zip，Intel + Apple Silicon）..."
+echo "打包 Electron（zip，默认当前 Mac 的 CPU 架构）..."
+echo "若需明确架构：Apple Silicon 用 npx electron-builder --mac zip --arm64；Intel 用 --x64。"
 export CSC_IDENTITY_AUTO_DISCOVERY=false
 npx electron-builder --mac zip
 
