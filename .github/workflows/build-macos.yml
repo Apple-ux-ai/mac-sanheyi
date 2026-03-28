@@ -1,5 +1,6 @@
-# 在 macOS Runner 上打 x64 + arm64 便携 ZIP（无需代码签名时可直出）
-# 仓库结构：根目录下为子目录 sanheyi/ 时保持默认；若应用代码在仓库根目录，请删除 job 中的 working-directory。
+# 分别产出 Apple Silicon (arm64) 与 Intel (x64) 便携 ZIP。
+# PyInstaller 后端必须与 Electron 架构一致，故使用两种 Runner，不能在同一台 ARM 上交叉打 x64 后端。
+# Intel Runner 标签见：https://github.com/actions/runner-images/blob/main/README.md
 
 name: Build macOS portable ZIP
 
@@ -12,7 +13,19 @@ defaults:
 
 jobs:
   mac-zip:
-    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: macos-latest
+            arch: arm64
+            label: Apple-Silicon
+          - runs-on: macos-15-intel
+            arch: x64
+            label: Intel
+    runs-on: ${{ matrix.runs-on }}
+    name: mac-zip (${{ matrix.label }})
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,14 +58,14 @@ jobs:
           python -m pip install -r backend/requirements.txt
           python build_backend.py
 
-      - name: Build Electron mac zip
+      - name: Build Electron mac zip (${{ matrix.arch }})
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
-        run: npx electron-builder --mac zip
+        run: npx electron-builder --mac zip --${{ matrix.arch }}
 
-      - name: Upload portable artifacts
+      - name: Upload portable artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mac-portable-zip
+          name: mac-portable-${{ matrix.arch }}
           path: sanheyi/release_unpacked/portable/*.zip
           if-no-files-found: error
