@@ -1,0 +1,64 @@
+appId: com.kunqiong.converter
+productName: 鲲穹转换大师
+directories:
+  output: release/${version}
+  buildResources: build
+files:
+  - from: .
+    filter:
+      - package.json
+      - electron/**/*
+  - from: frontend/dist
+    to: frontend/dist
+    filter:
+      - "**/*"
+extraResources:
+  - from: backend/dist/api
+    to: backend
+mac:
+  target:
+    - target: zip
+      arch:
+        - x64
+        - arm64
+  category: public.app-category.utilities
+  artifactName: portable/${productName}-Portable-mac-${version}-${arch}.${ext}
+linux:
+  target:
+    - target: deb
+      arch:
+        - x64
+        - arm64
+    - target: AppImage
+      arch:
+        - x64
+        - arm64
+  category: Utility
+  executableName: kunqiong-converter
+  icon: build/icons
+deb:
+  priority: optional
+  section: utils
+  depends:
+    - libasound2
+    - libgbm1
+    - libnotify4
+    - libnss3
+    - libxtst6
+    - xdg-utils
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+nsis:
+  oneClick: false
+  perMachine: true
+  allowToChangeInstallationDirectory: true
+  unicode: true
+  artifactName: installer/${productName}-Setup-${version}.${ext}
+portable:
+  artifactName: portable/${productName}-Portable-${version}.${ext}

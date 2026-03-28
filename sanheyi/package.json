@@ -1,0 +1,85 @@
+{
+  "name": "kunqiong-converter",
+  "version": "1.0.0",
+  "description": "鲲穹转换大师 - 集成化格式转换工具",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "concurrently \"npm run dev --prefix frontend\" \"electron electron/main.js\"",
+    "build:backend": "python build_backend.py",
+    "build": "npm run build:backend && electron-builder",
+    "build:portable": "npm run build:backend && electron-builder --dir -c.directories.output=release_portable",
+    "build:installer": "npm run build:backend && electron-builder --win nsis --prepackaged release_portable/win-unpacked --config.directories.output=release_installer",
+    "build:unpack": "npm run build:backend && electron-builder --dir -c.directories.output=release_v2_temp",
+    "build:linux": "npm run build:backend && electron-builder --linux deb AppImage",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:mac": "npm run build:frontend && npm run build:backend && electron-builder --mac zip",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.kunqiong.converter",
+    "productName": "鲲穹转换大师",
+    "directories": {
+      "output": "release_unpacked"
+    },
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "backend/dist/api",
+        "to": "backend",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "version.txt",
+        "to": "."
+      },
+      {
+        "from": "electron/updater",
+        "to": "updater",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "frontend/dist/icon.ico",
+      "artifactName": "${productName}_Setup_${version}.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.utilities",
+      "artifactName": "portable/${productName}-Portable-mac-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "wait-on": "^7.2.0"
+  }
+}

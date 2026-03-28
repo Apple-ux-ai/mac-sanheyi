@@ -1,0 +1,77 @@
+import React from 'react';
+import {
+  SettingsPanel,
+  SettingSlider,
+  SettingPresets } from
+'../../tool-ui/common/SharedUI';import { t } from '@/i18n';
+
+
+const GIFToImageParamConfig = ({
+  quality, setQuality,
+  interval, setInterval,
+  preset, setPreset
+}) => {
+
+  const handlePresetSelect = (p) => {
+    setPreset(p);
+    switch (p) {
+      case '低质量':
+        setQuality(40);
+        setInterval(50);
+        break;
+      case '中等质量':
+        setQuality(70);
+        setInterval(100);
+        break;
+      case '高质量':
+        setQuality(90);
+        setInterval(100);
+        break;
+      case '社交媒体':
+        setQuality(80);
+        setInterval(100);
+        break;
+      default:
+        break;
+    }
+  };
+
+  return (
+    <SettingsPanel title={t("转换选项")}>
+      <SettingPresets
+        label={t("快速预设")}
+        presets={['低质量', '中等质量', '高质量', '社交媒体']}
+        currentPreset={preset}
+        onSelect={handlePresetSelect}
+        columns={2} />
+      
+      <SettingSlider
+        label={t("质量")}
+        value={quality}
+        unit="%"
+        min={1}
+        max={100}
+        step={1}
+        onChange={(val) => {
+          setQuality(val);
+          setPreset('自定义');
+        }} />
+      
+      <SettingSlider
+        label={t("提取密度")}
+        value={interval}
+        unit=""
+        min={1}
+        max={100}
+        step={1}
+        onChange={(val) => {
+          setInterval(val);
+          setPreset('自定义');
+        }}
+        valueDisplay={t("提取原视频的 ${interval}% 帧", { "interval": interval })} />
+      
+    </SettingsPanel>);
+
+};
+
+export default GIFToImageParamConfig;
