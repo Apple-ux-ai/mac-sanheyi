@@ -1,6 +1,5 @@
 import os
 import subprocess
-import shutil
 import sys
 
 def build_backend():
@@ -22,23 +21,28 @@ def build_backend():
     # --paths: Add backend to python path to find modules
     
     cmd = [
-        'pyinstaller',
-        '--noconfirm',
-        '--onedir',
-        '--console',  # Keep console for now to see logs/errors. Electron hides it anyway with child_process
-        '--clean',
-        '--distpath', os.path.join('backend', 'dist'),
-        '--workpath', os.path.join('backend', 'build_temp'),
-        '--name', 'api',
-        '--paths', 'backend',
-        # Add hidden imports if necessary (e.g. if some modules are imported dynamically)
-        # '--hidden-import', 'PIL', 
-        os.path.join('backend', 'main.py')
+        sys.executable,
+        "-m",
+        "PyInstaller",
+        "--noconfirm",
+        "--onedir",
+        "--console",  # Keep console for now to see logs/errors. Electron hides it anyway with child_process
+        "--clean",
+        "--distpath",
+        os.path.join("backend", "dist"),
+        "--workpath",
+        os.path.join("backend", "build_temp"),
+        "--name",
+        "api",
+        "--paths",
+        "backend",
+        os.path.join("backend", "main.py"),
     ]
-    
+
     print(f"Running command: {' '.join(cmd)}")
-    
-    result = subprocess.run(cmd, shell=True)
+
+    # shell=True + list 在 macOS/Linux 上只会把第一项交给 shell，导致 PyInstaller 收不到 scriptname
+    result = subprocess.run(cmd, shell=False)
     
     if result.returncode != 0:
         print("Backend build failed!")
